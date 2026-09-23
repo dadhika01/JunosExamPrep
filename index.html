@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark" />
+  <title>Juniper JNCIS Mock Exams — ENT &amp; SP</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- ============ HOME: CERTIFICATION SELECT ============ -->
+    <section id="screen-home" class="screen active">
+      <header class="hero">
+        <div class="badge">Juniper Certification Practice</div>
+        <h1>JNCIS Mock Exams</h1>
+        <p class="subtitle">Timed practice exams for the two Specialist certifications. Progress is saved locally in your browser — pick a certification to begin.</p>
+      </header>
+
+      <!-- Resume in-progress exam -->
+      <div id="resume-banner" class="resume-banner" hidden>
+        <span class="resume-icon">⏳</span>
+        <p id="resume-text"></p>
+        <button id="resume-btn" class="btn btn-primary">Resume</button>
+        <button id="discard-btn" class="btn btn-ghost">Discard</button>
+      </div>
+
+      <div id="cert-cards" class="cert-cards"></div>
+
+      <!-- Attempt history -->
+      <div id="history-box" class="card" hidden>
+        <div class="history-head">
+          <h2>Your recent attempts</h2>
+          <button id="clear-history-btn" class="btn btn-ghost">Clear history</button>
+        </div>
+        <div id="history-list" class="history-list"></div>
+      </div>
+
+      <p class="disclaimer">
+        Original, exam-style questions written to the publicly published exam objectives for study purposes.
+        Unofficial practice tool — not affiliated with or endorsed by Juniper Networks.
+      </p>
+    </section>
+
+    <!-- ============ CERT DETAIL: EXAM SELECT ============ -->
+    <section id="screen-cert" class="screen">
+      <button class="link-back" id="back-home">&larr; All certifications</button>
+      <header class="hero cert-hero">
+        <div class="badge" id="cert-code">JN0-XXX</div>
+        <h1 id="cert-name">Certification</h1>
+        <p class="subtitle" id="cert-full"></p>
+        <p class="cert-meta" id="cert-meta"></p>
+      </header>
+
+      <div class="card">
+        <h2>Choose a mock exam</h2>
+        <div id="exam-list" class="exam-list"></div>
+      </div>
+
+      <div class="card">
+        <h2>Options</h2>
+        <div class="config-row toggle-row">
+          <label for="shuffle">Shuffle questions &amp; answer options</label>
+          <input type="checkbox" id="shuffle" checked />
+        </div>
+        <p class="muted" style="margin:6px 0 0; font-size:0.85rem;">Each exam is timed at roughly 83 seconds per question (matching the ~90-minute, 65-question real exam pace). The timer starts when you begin.</p>
+      </div>
+
+      <div class="card">
+        <h2>Blueprint domains</h2>
+        <div id="blueprint-list" class="blueprint-list"></div>
+      </div>
+    </section>
+
+    <!-- ============ EXAM SCREEN ============ -->
+    <section id="screen-exam" class="screen">
+      <div class="exam-topbar">
+        <div class="progress-info">
+          <span id="exam-title-mini" class="exam-title-mini"></span>
+          <span id="q-position">Question 1 of 25</span>
+          <div class="progress-track"><div id="progress-bar" class="progress-fill"></div></div>
+        </div>
+        <div id="timer" class="timer">--:--</div>
+      </div>
+
+      <div class="exam-body">
+        <main class="question-pane card">
+          <div class="q-meta">
+            <span id="q-domain" class="domain-chip">Domain</span>
+            <button id="flag-btn" class="flag-btn" title="Flag for review">&#9873; Flag</button>
+          </div>
+          <p id="q-text" class="q-text"></p>
+          <p id="q-hint" class="q-hint"></p>
+          <div id="q-options" class="options"></div>
+        </main>
+
+        <aside class="nav-pane card">
+          <h3>Navigator</h3>
+          <div id="q-grid" class="q-grid"></div>
+          <div class="legend">
+            <span><i class="dot dot-answered"></i> Answered</span>
+            <span><i class="dot dot-flagged"></i> Flagged</span>
+            <span><i class="dot dot-current"></i> Current</span>
+          </div>
+        </aside>
+      </div>
+
+      <div class="exam-footer">
+        <button id="prev-btn" class="btn">&larr; Previous</button>
+        <button id="next-btn" class="btn">Next &rarr;</button>
+        <button id="submit-btn" class="btn btn-primary">Submit Exam</button>
+      </div>
+    </section>
+
+    <!-- ============ RESULTS SCREEN ============ -->
+    <section id="screen-results" class="screen">
+      <div class="card result-summary">
+        <div id="score-ring" class="score-ring"><span id="score-pct">0%</span></div>
+        <div class="result-text">
+          <h2 id="result-verdict">Result</h2>
+          <p id="result-detail"></p>
+          <p class="note">Passing on the real exam is typically ~60&ndash;70%. This tool uses 65% as a study benchmark.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Performance by domain</h2>
+        <div id="domain-breakdown" class="domain-breakdown"></div>
+      </div>
+
+      <div class="card">
+        <div class="review-header">
+          <h2>Review answers &amp; explanations</h2>
+          <label class="toggle-row inline"><input type="checkbox" id="wrong-only" /> Show incorrect only</label>
+        </div>
+        <div id="review-list" class="review-list"></div>
+      </div>
+
+      <div class="result-actions">
+        <button id="retry-btn" class="btn">Retake this exam</button>
+        <button id="other-exam-btn" class="btn btn-primary">Other exams for this cert</button>
+        <button id="home-btn" class="btn">All certifications</button>
+      </div>
+    </section>
+  </div>
+
+  <script src="data-ent.js"></script>
+  <script src="data-sp.js"></script>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
