@@ -19,7 +19,15 @@ Branch **`main`**, folder **`/ (root)`** → **Save**. The site goes live in a m
 
 ## Features
 
-- **Multiple separate mock exams per certification** (3 each).
+- **Multiple separate mock exams per certification** (8 each).
+- **Performance Dashboard** (📊 on the home screen): overall stats (attempts, best/average score,
+  pass rate, most recent), **weakest and strongest areas** aggregated per domain across your attempts,
+  a score trend chart, and best score per exam — with a certification filter. Built entirely from your
+  localStorage attempt history (no server).
+- **Revision Cheat Sheet** (📝 on the home screen): a printable quick-reference covering both certs'
+  objectives. Each feature card has five sections — **Concept · Why it's needed · Key values/defaults ·
+  Important flows · Limitations** — with illustrative CLI where it aids memory. Includes a cert filter,
+  search, and a Print/PDF button.
 - **Timed** at ~83 seconds per question — matching the real ~90-minute / 65-question exam pace.
   (A 25-question mock runs ~35 min; a 20-question mock ~28 min.) Auto-submits at time zero.
 - **Progress saved in localStorage:**
@@ -86,6 +94,7 @@ data-ent-3.js   # appends ENT mock exams G–H (objective gap coverage)
 data-sp.js      # SP_CERT:  metadata, domains, mock exams A–C
 data-sp-2.js    # appends SP mock exams D–F
 data-sp-3.js    # appends SP mock exams G–H (objective gap coverage)
+cheatsheet.js   # CHEATSHEET data for the revision cheat-sheet screen
 .nojekyll       # tells GitHub Pages to serve files as-is
 ```
 

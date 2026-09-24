@@ -392,12 +392,13 @@
     const pct = Math.round((correctCount / total) * 100);
     const passed = pct >= PASS_MARK;
 
-    // Persist to attempt history
+    // Persist to attempt history (including per-domain results for the dashboard).
     addHistory({
       date: Date.now(),
       certId: state.cert.id, certName: state.cert.name,
       examId: state.exam.id, examName: state.exam.name,
-      correct: correctCount, total: total, pct: pct, passed: passed
+      correct: correctCount, total: total, pct: pct, passed: passed,
+      domains: perDomain // { DOMAINKEY: { correct, total } }
     });
 
     $("#score-pct").textContent = pct + "%";
@@ -471,6 +472,241 @@
     }
   }
 
+  // ================= DASHBOARD =================
+  var dashCertFilter = "ALL";
+
+  function certById(id) { return CERTS.find(function (c) { return c.id === id; }) || null; }
+
+  function openDashboard() {
+    renderDashboard();
+    showScreen("screen-dashboard");
+  }
+
+  function renderDashboard() {
+    var history = getHistory();
+    // Cert filter buttons
+    var fb = $("#dash-filter");
+    fb.innerHTML = "";
+    var opts = [{ id: "ALL", name: "All certifications" }].concat(CERTS.map(function (c) { return { id: c.id, name: c.name }; }));
+    opts.forEach(function (o) {
+      var b = document.createElement("button");
+      b.className = "chip-btn" + (dashCertFilter === o.id ? " active" : "");
+      b.textContent = o.name;
+      b.onclick = function () { dashCertFilter = o.id; renderDashboard(); };
+      fb.appendChild(b);
+    });
+
+    var attempts = history.filter(function (a) { return dashCertFilter === "ALL" || a.certId === dashCertFilter; });
+
+    var empty = $("#dash-empty");
+    var content = $("#dash-content");
+    if (!attempts.length) {
+      empty.hidden = false;
+      content.hidden = true;
+      return;
+    }
+    empty.hidden = true;
+    content.hidden = false;
+
+    // ---- Summary stats ----
+    var scores = attempts.map(function (a) { return a.pct; });
+    var best = Math.max.apply(null, scores);
+    var avg = Math.round(scores.reduce(function (s, v) { return s + v; }, 0) / scores.length);
+    var passes = attempts.filter(function (a) { return a.passed; }).length;
+    var passRate = Math.round((passes / attempts.length) * 100);
+    var last = attempts[0]; // history is newest-first
+
+    var stats = [
+      { label: "Attempts", value: attempts.length },
+      { label: "Best score", value: best + "%", cls: best >= PASS_MARK ? "good" : "bad" },
+      { label: "Average", value: avg + "%", cls: avg >= PASS_MARK ? "good" : "bad" },
+      { label: "Pass rate", value: passRate + "%", cls: passRate >= 50 ? "good" : "bad" },
+      { label: "Most recent", value: last.pct + "%", cls: last.passed ? "good" : "bad" }
+    ];
+    var sc = $("#dash-stats");
+    sc.innerHTML = "";
+    stats.forEach(function (s) {
+      var d = document.createElement("div");
+      d.className = "stat-card";
+      d.innerHTML = '<span class="stat-value ' + (s.cls || "") + '">' + s.value + '</span>' +
+        '<span class="stat-label">' + s.label + '</span>';
+      sc.appendChild(d);
+    });
+
+    // ---- Per-domain aggregation (weak/strong) ----
+    // Aggregate across attempts that saved per-domain data.
+    var domAgg = {}; // key -> { correct, total, certId }
+    var haveDomainData = false;
+    attempts.forEach(function (a) {
+      if (!a.domains) return;
+      haveDomainData = true;
+      Object.keys(a.domains).forEach(function (k) {
+        var key = a.certId + "::" + k;
+        if (!domAgg[key]) domAgg[key] = { correct: 0, total: 0, certId: a.certId, domain: k };
+        domAgg[key].correct += a.domains[k].correct;
+        domAgg[key].total += a.domains[k].total;
+      });
+    });
+
+    var domRows = Object.keys(domAgg).map(function (key) {
+      var d = domAgg[key];
+      var cert = certById(d.certId);
+      return {
+        label: (dashCertFilter === "ALL" && cert ? cert.name + " · " : "") + (cert ? domainLabel(cert, d.domain) : d.domain),
+        pct: Math.round((d.correct / d.total) * 100),
+        correct: d.correct, total: d.total
+      };
+    }).sort(function (a, b) { return a.pct - b.pct; });
+
+    var domainNote = $("#dash-domain-note");
+    if (!haveDomainData) {
+      domainNote.hidden = false;
+      domainNote.textContent = "Per-domain breakdown is recorded for exams taken from now on. Take (or retake) an exam to populate your weak/strong areas.";
+    } else {
+      domainNote.hidden = true;
+    }
+
+    // Weak = lowest, Strong = highest
+    var weak = domRows.slice(0, 5);
+    var strong = domRows.slice().reverse().slice(0, 5);
+    renderDomainList($("#dash-weak"), weak, "weak");
+    renderDomainList($("#dash-strong"), strong, "strong");
+
+    // ---- Score trend (oldest -> newest) ----
+    renderTrend($("#dash-trend"), attempts.slice().reverse());
+
+    // ---- Per-exam best scores ----
+    var perExam = {}; // examId -> {name, certName, best, count}
+    attempts.forEach(function (a) {
+      if (!perExam[a.certId + a.examId]) perExam[a.certId + a.examId] = { name: a.examName, certName: a.certName, best: a.pct, count: 0 };
+      var e = perExam[a.certId + a.examId];
+      e.best = Math.max(e.best, a.pct);
+      e.count++;
+    });
+    var pe = $("#dash-per-exam");
+    pe.innerHTML = "";
+    Object.keys(perExam).forEach(function (k) {
+      var e = perExam[k];
+      var row = document.createElement("div");
+      row.className = "history-row";
+      row.innerHTML =
+        '<span class="hist-badge ' + (e.best >= PASS_MARK ? "hist-pass" : "hist-fail") + '">' + e.best + '%</span>' +
+        '<span class="hist-name">' + escapeHtml(e.certName) + ' · ' + escapeHtml(e.name) + '</span>' +
+        '<span class="hist-score">' + e.count + ' attempt' + (e.count > 1 ? "s" : "") + '</span>' +
+        '<span class="hist-date">best</span>';
+      pe.appendChild(row);
+    });
+  }
+
+  function renderDomainList(container, rows, kind) {
+    container.innerHTML = "";
+    if (!rows.length) { container.innerHTML = '<p class="muted">No domain data yet.</p>'; return; }
+    rows.forEach(function (r) {
+      var color = r.pct >= PASS_MARK ? "var(--ok)" : r.pct >= 40 ? "var(--warn)" : "var(--bad)";
+      var row = document.createElement("div");
+      row.className = "dom-row";
+      row.innerHTML =
+        '<span class="dom-name">' + escapeHtml(r.label) + '</span>' +
+        '<div class="dom-bar"><div class="dom-bar-fill" style="width:' + r.pct + '%; background:' + color + '"></div></div>' +
+        '<span class="dom-score">' + r.pct + '%</span>';
+      container.appendChild(row);
+    });
+  }
+
+  function renderTrend(container, ordered) {
+    container.innerHTML = "";
+    var max = 100;
+    ordered.slice(-20).forEach(function (a) {
+      var bar = document.createElement("div");
+      bar.className = "trend-bar-wrap";
+      var h = Math.max(4, Math.round((a.pct / max) * 100));
+      bar.innerHTML =
+        '<div class="trend-bar ' + (a.passed ? "pass" : "fail") + '" style="height:' + h + '%" title="' +
+        escapeHtml(a.examName) + ': ' + a.pct + '%"></div>' +
+        '<span class="trend-lbl">' + a.pct + '</span>';
+      container.appendChild(bar);
+    });
+  }
+
+  // ================= CHEAT SHEET =================
+  var sheetCertFilter = "ALL";
+  var sheetQuery = "";
+
+  function openCheatSheet() {
+    renderCheatSheet();
+    showScreen("screen-cheatsheet");
+  }
+
+  function renderCheatSheet() {
+    // Cert filter chips
+    var fb = $("#sheet-filter");
+    fb.innerHTML = "";
+    var opts = [{ id: "ALL", name: "Both certifications" }].concat(
+      CHEATSHEET.map(function (g) { return { id: g.certId, name: g.certName }; })
+    );
+    opts.forEach(function (o) {
+      var b = document.createElement("button");
+      b.className = "chip-btn" + (sheetCertFilter === o.id ? " active" : "");
+      b.textContent = o.name;
+      b.onclick = function () { sheetCertFilter = o.id; renderCheatSheet(); };
+      fb.appendChild(b);
+    });
+
+    var q = sheetQuery.trim().toLowerCase();
+    var container = $("#sheet-content");
+    container.innerHTML = "";
+    var shown = 0;
+
+    CHEATSHEET.forEach(function (group) {
+      if (sheetCertFilter !== "ALL" && group.certId !== sheetCertFilter) return;
+      // Filter features by query
+      var feats = group.features.filter(function (f) {
+        if (!q) return true;
+        var hay = (f.name + " " + f.domain + " " + f.concept + " " + f.motive + " " +
+          (f.notes || []).join(" ") + " " + (f.flows || []).join(" ") + " " + (f.limits || []).join(" ")).toLowerCase();
+        return hay.indexOf(q) !== -1;
+      });
+      if (!feats.length) return;
+
+      var header = document.createElement("h2");
+      header.className = "sheet-cert-header";
+      header.textContent = group.certName + " — " + group.certCode;
+      container.appendChild(header);
+
+      feats.forEach(function (f) {
+        shown++;
+        var card = document.createElement("div");
+        card.className = "sheet-card";
+        var notes = (f.notes || []).map(function (n) { return '<li>' + inlineCode(n) + '</li>'; }).join("");
+        var flows = (f.flows || []).map(function (n) { return '<li>' + inlineCode(n) + '</li>'; }).join("");
+        var limits = (f.limits || []).map(function (n) { return '<li>' + inlineCode(n) + '</li>'; }).join("");
+        card.innerHTML =
+          '<div class="sheet-card-head">' +
+            '<h3>' + escapeHtml(f.name) + '</h3>' +
+            '<span class="sheet-domain">' + escapeHtml(f.domain) + '</span>' +
+          '</div>' +
+          '<div class="sheet-sec"><span class="sheet-sec-t">Concept</span><p>' + inlineCode(f.concept) + '</p></div>' +
+          '<div class="sheet-sec"><span class="sheet-sec-t">Why it\u2019s needed</span><p>' + inlineCode(f.motive) + '</p></div>' +
+          (notes ? '<div class="sheet-sec"><span class="sheet-sec-t">Key values / defaults / standards</span><ul>' + notes + '</ul></div>' : "") +
+          (flows ? '<div class="sheet-sec"><span class="sheet-sec-t">Important concepts &amp; flows</span><ul>' + flows + '</ul></div>' : "") +
+          (limits ? '<div class="sheet-sec"><span class="sheet-sec-t">Limitations</span><ul>' + limits + '</ul></div>' : "");
+        container.appendChild(card);
+      });
+    });
+
+    if (!shown) container.innerHTML = '<p class="muted">No cheat-sheet entries match your search.</p>';
+  }
+
+  // Wrap `backtick code` spans in <code>, and escape the rest safely.
+  function inlineCode(s) {
+    var parts = String(s).split("`");
+    var out = "";
+    for (var i = 0; i < parts.length; i++) {
+      out += (i % 2 === 1) ? '<code>' + escapeHtml(parts[i]) + '</code>' : escapeHtml(parts[i]);
+    }
+    return out;
+  }
+
   // ---------- Static controls ----------
   function initControls() {
     $("#prev-btn").addEventListener("click", () => { if (state.current > 0) { state.current--; saveResume(); renderQuestion(); } });
@@ -481,6 +717,18 @@
     $("#retry-btn").addEventListener("click", () => startExam(state.exam));
     $("#other-exam-btn").addEventListener("click", () => openCert(state.cert));
     $("#home-btn").addEventListener("click", () => { initHome(); showScreen("screen-home"); });
+
+    // Home navigation to Dashboard / Cheat Sheet
+    $("#nav-dashboard").addEventListener("click", openDashboard);
+    $("#nav-cheatsheet").addEventListener("click", openCheatSheet);
+    $("#dash-back").addEventListener("click", () => { initHome(); showScreen("screen-home"); });
+    $("#dash-cheatsheet-link").addEventListener("click", openCheatSheet);
+    $("#sheet-back").addEventListener("click", () => { initHome(); showScreen("screen-home"); });
+    $("#sheet-print").addEventListener("click", () => window.print());
+    $("#sheet-search").addEventListener("input", (e) => { sheetQuery = e.target.value; renderCheatSheet(); });
+    // Result screen shortcut to dashboard
+    var rd = $("#result-dashboard-btn");
+    if (rd) rd.addEventListener("click", openDashboard);
 
     document.addEventListener("keydown", (e) => {
       if (!$("#screen-exam").classList.contains("active")) return;

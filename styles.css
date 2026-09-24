@@ -261,3 +261,98 @@ h3 { font-size: 1rem; margin: 0 0 12px; }
   .history-row { grid-template-columns: 48px 1fr auto; }
   .hist-date { display: none; }
 }
+
+
+/* ================= HOME NAV TILES ================= */
+.home-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
+.nav-tile { display: flex; align-items: center; gap: 14px; text-align: left; padding: 16px 18px; }
+.nav-tile .nav-ico { font-size: 1.6rem; }
+.nav-tile .nav-tt { display: flex; flex-direction: column; }
+.nav-tile .nav-tt strong { font-size: 1rem; }
+.nav-tile .nav-tt small { color: var(--muted); font-weight: 500; }
+.nav-tile:hover .nav-tt small { color: var(--brand); }
+
+/* ================= CHIP ROW / FILTER ================= */
+.chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.chip-btn {
+  border: 1px solid var(--line); background: var(--card-2); color: var(--muted);
+  padding: 7px 14px; border-radius: 999px; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: all 0.12s ease;
+}
+.chip-btn:hover { border-color: var(--brand); color: var(--brand); }
+.chip-btn.active { background: var(--brand); color: var(--brand-ink); border-color: var(--brand); }
+
+.link-inline { background: none; border: none; color: var(--brand); font-weight: 600; cursor: pointer; padding: 0; text-decoration: underline; font-size: inherit; }
+.small { font-size: 0.85rem; }
+
+/* ================= DASHBOARD ================= */
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 18px; }
+.stat-card {
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 18px; display: flex; flex-direction: column; align-items: center; box-shadow: var(--shadow);
+}
+.stat-value { font-size: 1.9rem; font-weight: 800; line-height: 1; }
+.stat-value.good { color: var(--ok); }
+.stat-value.bad { color: var(--bad); }
+.stat-label { color: var(--muted); font-size: 0.8rem; margin-top: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.dash-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.dash-cols .card { margin-bottom: 0; }
+
+/* Score trend bars */
+.trend { display: flex; align-items: flex-end; gap: 6px; height: 160px; padding-top: 8px; }
+.trend-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; min-width: 14px; }
+.trend-bar { width: 100%; max-width: 34px; border-radius: 5px 5px 0 0; background: var(--brand); transition: height 0.3s ease; }
+.trend-bar.pass { background: var(--ok); }
+.trend-bar.fail { background: var(--bad); }
+.trend-lbl { font-size: 0.68rem; color: var(--muted); margin-top: 4px; font-variant-numeric: tabular-nums; }
+
+/* ================= CHEAT SHEET ================= */
+.sheet-toolbar { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+.sheet-toolbar .chip-row { margin-bottom: 0; }
+.sheet-tools { display: flex; gap: 8px; align-items: center; }
+.sheet-search-input {
+  padding: 9px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--card-2);
+  color: var(--ink); font-size: 0.9rem; min-width: 240px;
+}
+.sheet-search-input:focus { outline: none; border-color: var(--brand); }
+
+.sheet-cert-header {
+  font-size: 1.1rem; color: var(--brand); border-bottom: 2px solid var(--brand-dark);
+  padding-bottom: 8px; margin: 22px 0 14px;
+}
+.sheet-content { display: block; }
+.sheet-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 20px; margin-bottom: 14px; box-shadow: var(--shadow); break-inside: avoid; }
+.sheet-card-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+.sheet-card-head h3 { margin: 0; font-size: 1.1rem; }
+.sheet-domain { background: var(--brand-soft); color: var(--brand); border: 1px solid var(--brand-dark); border-radius: 999px; padding: 3px 12px; font-size: 0.74rem; font-weight: 700; white-space: nowrap; }
+.sheet-sec { margin: 10px 0; }
+.sheet-sec-t { display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.6px; color: var(--brand); font-weight: 700; margin-bottom: 3px; }
+.sheet-sec p { margin: 0; }
+.sheet-sec ul { margin: 4px 0 0; padding-left: 20px; }
+.sheet-sec li { margin: 3px 0; }
+.sheet-card code {
+  background: var(--bg-2); color: #7fe3d4; border: 1px solid var(--line);
+  padding: 1px 6px; border-radius: 5px; font-size: 0.86em; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 760px) {
+  .home-nav { grid-template-columns: 1fr; }
+  .dash-cols { grid-template-columns: 1fr; }
+  .sheet-toolbar { flex-direction: column; }
+  .sheet-search-input { min-width: 0; width: 100%; }
+}
+
+/* ================= PRINT (cheat sheet -> PDF) ================= */
+@media print {
+  body { background: #fff; color: #000; }
+  .app { max-width: none; padding: 0; }
+  .screen { display: none !important; }
+  #screen-cheatsheet.active { display: block !important; }
+  .link-back, .sheet-toolbar, .badge, .hero .subtitle { display: none !important; }
+  .sheet-card { border: 1px solid #ccc; box-shadow: none; background: #fff; color: #000; page-break-inside: avoid; }
+  .sheet-cert-header { color: #000; border-color: #000; }
+  .sheet-sec-t, .sheet-domain { color: #000; }
+  .sheet-card code { background: #f0f0f0; color: #000; border-color: #ccc; }
+  h1 { color: #000; }
+}

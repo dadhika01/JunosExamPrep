@@ -17,6 +17,18 @@
         <p class="subtitle">Timed practice exams for the two Specialist certifications. Progress is saved locally in your browser — pick a certification to begin.</p>
       </header>
 
+      <!-- Top navigation -->
+      <div class="home-nav">
+        <button id="nav-dashboard" class="btn nav-tile">
+          <span class="nav-ico">📊</span>
+          <span class="nav-tt"><strong>Performance Dashboard</strong><small>See your scores, weak &amp; strong areas</small></span>
+        </button>
+        <button id="nav-cheatsheet" class="btn nav-tile">
+          <span class="nav-ico">📝</span>
+          <span class="nav-tt"><strong>Revision Cheat Sheet</strong><small>Concepts, defaults &amp; limits by objective</small></span>
+        </button>
+      </div>
+
       <!-- Resume in-progress exam -->
       <div id="resume-banner" class="resume-banner" hidden>
         <span class="resume-icon">⏳</span>
@@ -139,8 +151,74 @@
       <div class="result-actions">
         <button id="retry-btn" class="btn">Retake this exam</button>
         <button id="other-exam-btn" class="btn btn-primary">Other exams for this cert</button>
+        <button id="result-dashboard-btn" class="btn">View dashboard</button>
         <button id="home-btn" class="btn">All certifications</button>
       </div>
+    </section>
+
+    <!-- ============ DASHBOARD SCREEN ============ -->
+    <section id="screen-dashboard" class="screen">
+      <button class="link-back" id="dash-back">&larr; Home</button>
+      <header class="hero">
+        <div class="badge">Performance Dashboard</div>
+        <h1>Your progress</h1>
+        <p class="subtitle">Built from your attempt history saved in this browser. Take exams to grow the data.</p>
+      </header>
+
+      <div id="dash-filter" class="chip-row"></div>
+
+      <div id="dash-empty" class="card" hidden>
+        <p class="muted">No attempts recorded yet in this browser. Finish a mock exam and your scores, trends, and weak/strong areas will appear here. You can also jump to the <button id="dash-cheatsheet-link" class="link-inline">revision cheat sheet</button>.</p>
+      </div>
+
+      <div id="dash-content" hidden>
+        <div id="dash-stats" class="stat-grid"></div>
+
+        <div class="dash-cols">
+          <div class="card">
+            <h2>⚠️ Weakest areas</h2>
+            <p class="muted small">Lowest accuracy across your attempts — prioritize these.</p>
+            <div id="dash-weak" class="domain-breakdown"></div>
+          </div>
+          <div class="card">
+            <h2>✅ Strongest areas</h2>
+            <p class="muted small">Highest accuracy — keep them sharp.</p>
+            <div id="dash-strong" class="domain-breakdown"></div>
+          </div>
+        </div>
+        <p id="dash-domain-note" class="muted small" hidden></p>
+
+        <div class="card">
+          <h2>Score trend</h2>
+          <p class="muted small">Most recent attempts (oldest → newest).</p>
+          <div id="dash-trend" class="trend"></div>
+        </div>
+
+        <div class="card">
+          <h2>Best score per exam</h2>
+          <div id="dash-per-exam" class="history-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CHEAT SHEET SCREEN ============ -->
+    <section id="screen-cheatsheet" class="screen">
+      <button class="link-back" id="sheet-back">&larr; Home</button>
+      <header class="hero">
+        <div class="badge">Revision Cheat Sheet</div>
+        <h1>Objective quick-reference</h1>
+        <p class="subtitle">Each feature: concept · why it&rsquo;s needed · key values &amp; defaults · flows · limitations.</p>
+      </header>
+
+      <div class="sheet-toolbar">
+        <div id="sheet-filter" class="chip-row"></div>
+        <div class="sheet-tools">
+          <input id="sheet-search" class="sheet-search-input" type="search" placeholder="Search features, values, keywords…" />
+          <button id="sheet-print" class="btn">Print / PDF</button>
+        </div>
+      </div>
+
+      <div id="sheet-content" class="sheet-content"></div>
     </section>
   </div>
 
@@ -150,6 +228,7 @@
   <script src="data-sp.js"></script>
   <script src="data-sp-2.js"></script>
   <script src="data-sp-3.js"></script>
+  <script src="cheatsheet.js"></script>
   <script src="data.js"></script>
   <script src="app.js"></script>
 </body>
