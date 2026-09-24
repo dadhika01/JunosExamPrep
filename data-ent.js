@@ -1,5 +1,5 @@
 /*
- * JNCIS-ENT (JN0-351) — Enterprise Routing and Switching, Specialist
+ * JNCIS-ENT (JN0-352) — Enterprise Routing and Switching, Specialist
  * Question data organized into multiple independent mock exams.
  *
  * Original, exam-style items written to the publicly published JNCIS-ENT
@@ -10,11 +10,12 @@
  */
 const ENT_CERT = {
   id: "ENT",
-  code: "JN0-351",
+  code: "JN0-352",
   name: "JNCIS-ENT",
   fullName: "Enterprise Routing and Switching, Specialist",
   track: "Enterprise Routing & Switching",
-  realExam: "~65 questions / 90 minutes",
+  junos: "Junos OS 23.1",
+  realExam: "65 questions / 90 minutes",
   domains: {
     L2:     "Layer 2 Switching, VLANs & Security",
     STP:    "Spanning Tree Protocols",

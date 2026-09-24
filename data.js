@@ -48,7 +48,9 @@ if (typeof ENT_CERT !== "undefined" && typeof SP_CERT !== "undefined") {
   global.ENT_CERT = ent;
   global.SP_CERT = sp;
   require("./data-ent-2.js");
+  require("./data-ent-3.js");
   require("./data-sp-2.js");
+  require("./data-sp-3.js");
   CERTS = [ent, sp];
 }
 

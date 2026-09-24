@@ -1,5 +1,5 @@
 /*
- * JNCIS-ENT (JN0-351) — additional mock exams (D, E, F).
+ * JNCIS-ENT (JN0-352) — additional mock exams (D, E, F).
  * Original, scenario-based, exam-style questions written to the published
  * JNCIS-ENT objectives. No question repeats those in data-ent.js.
  * Answer keys are deliberately spread across A/B/C/D and answer lengths varied.

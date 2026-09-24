@@ -165,7 +165,8 @@
     $("#cert-code").textContent = cert.code;
     $("#cert-name").textContent = cert.name;
     $("#cert-full").textContent = cert.fullName;
-    $("#cert-meta").textContent = cert.track + "  ·  Real exam: " + cert.realExam;
+    $("#cert-meta").textContent = cert.track + "  ·  Real exam: " + cert.realExam +
+      (cert.junos ? "  ·  " + cert.junos : "") + "  ·  Prerequisite: JNCIA-Junos";
 
     const list = $("#exam-list");
     list.innerHTML = "";

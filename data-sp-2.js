@@ -1,5 +1,5 @@
 /*
- * JNCIS-SP (JN0-363) — additional mock exams (D, E, F).
+ * JNCIS-SP (JN0-364) — additional mock exams (D, E, F).
  * Original, scenario-based, exam-style questions written to the published
  * JNCIS-SP objectives. No question repeats those in data-sp.js.
  * Answer keys are deliberately spread across A/B/C/D and answer lengths varied.

@@ -1,5 +1,5 @@
 /*
- * JNCIS-SP (JN0-363) — Service Provider Routing and Switching, Specialist
+ * JNCIS-SP (JN0-364) — Service Provider Routing and Switching, Specialist
  * Question data organized into multiple independent mock exams.
  *
  * Original, exam-style items written to the publicly published JNCIS-SP
@@ -10,11 +10,12 @@
  */
 const SP_CERT = {
   id: "SP",
-  code: "JN0-363",
+  code: "JN0-364",
   name: "JNCIS-SP",
   fullName: "Service Provider Routing and Switching, Specialist",
   track: "Service Provider Routing & Switching",
-  realExam: "~65 questions / 90 minutes",
+  junos: "Junos OS 25.2",
+  realExam: "65 questions / 90 minutes",
   domains: {
     PIR:     "Protocol-Independent Routing",
     OSPF:    "Open Shortest Path First (OSPF)",
