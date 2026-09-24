@@ -33,19 +33,29 @@ Branch **`main`**, folder **`/ (root)`** → **Save**. The site goes live in a m
 
 ## Mock exams
 
-### JNCIS-ENT (JN0-351) — 3 exams, 65 questions
+### JNCIS-ENT (JN0-351) — 6 exams, 130 questions
 | Exam | Focus | Questions |
 |------|-------|-----------|
 | Mock Exam A | Full blueprint (all 9 domains) | 25 |
 | Mock Exam B | Full blueprint, fresh scenarios | 25 |
 | Mock Exam C | Rapid mixed check-in | 15 |
+| Mock Exam D | Scenarios & troubleshooting | 25 |
+| Mock Exam E | Configuration & design (incl. config-snippet reads) | 25 |
+| Mock Exam F | Mixed rapid check-in | 15 |
 
-### JNCIS-SP (JN0-363) — 3 exams, 65 questions
+### JNCIS-SP (JN0-363) — 6 exams, 120 questions
 | Exam | Focus | Questions |
 |------|-------|-----------|
 | Mock Exam A | Full blueprint (all 12 domains) | 25 |
 | Mock Exam B | MPLS & MPLS-VPN focus | 20 |
 | Mock Exam C | Routing, IPv6, tunnels, CoS & HA | 20 |
+| Mock Exam D | MPLS & VPN scenarios | 20 |
+| Mock Exam E | Routing, IPv6 & design | 20 |
+| Mock Exam F | Mixed rapid check-in | 15 |
+
+Questions mix easy recall, tougher configuration/troubleshooting, and multi-step scenarios.
+Correct-answer positions are balanced across A/B/C/D (no guessable pattern), and no question is
+repeated across exams.
 
 ## Run locally
 
@@ -61,9 +71,11 @@ python3 -m http.server 8000    # then visit http://localhost:8000
 index.html      # UI shell (home → cert → exam → results)
 styles.css      # dark theme
 app.js          # engine: timer, localStorage resume + history, scoring, review
-data.js         # CERTS registry
-data-ent.js     # ENT_CERT: metadata, domains, 3 mock exams
-data-sp.js      # SP_CERT:  metadata, domains, 3 mock exams
+data.js         # CERTS registry + answer-position balancing
+data-ent.js     # ENT_CERT: metadata, domains, mock exams A–C
+data-ent-2.js   # appends ENT mock exams D–F
+data-sp.js      # SP_CERT:  metadata, domains, mock exams A–C
+data-sp-2.js    # appends SP mock exams D–F
 .nojekyll       # tells GitHub Pages to serve files as-is
 ```
 
