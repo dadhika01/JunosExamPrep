@@ -71,7 +71,7 @@
       examId: state.exam.id,
       // persist the presented question order by id, and the presented option order
       questions: state.questions.map((q) => ({
-        id: q.id, domain: q.domain, text: q.text, options: q.options,
+        id: q.id, domain: q.domain, text: q.text, exhibit: q.exhibit, options: q.options,
         answer: q.answer, multi: q.multi, explanation: q.explanation
       })),
       answers: Object.keys(state.answers).reduce((acc, k) => {
@@ -171,7 +171,7 @@
     const list = $("#exam-list");
     list.innerHTML = "";
     cert.exams.forEach((exam) => {
-      const mins = Math.round(exam.questions.length * SECONDS_PER_QUESTION / 60);
+      const mins = Math.round((exam.timeLimitSec ? exam.timeLimitSec : exam.questions.length * SECONDS_PER_QUESTION) / 60);
       const row = document.createElement("div");
       row.className = "exam-row";
       row.innerHTML =
@@ -222,14 +222,17 @@
       const answer = order
         .map((origIdx, newIdx) => (originalAnswers.includes(origIdx) ? newIdx : -1))
         .filter((i) => i !== -1);
-      return { id: q.id, domain: q.domain, text: q.text, options, answer, multi: !!q.multi, explanation: q.explanation };
+      return { id: q.id, domain: q.domain, text: q.text, exhibit: q.exhibit, options, answer, multi: !!q.multi, explanation: q.explanation };
     });
 
     state.answers = {};
     state.flagged = {};
     state.current = 0;
     state.submitted = false;
-    state.timeLimit = exam.questions.length * SECONDS_PER_QUESTION;
+    // An exam may specify a fixed clock (timeLimitSec) to mirror the real exam
+    // (e.g., 90 minutes); otherwise the timer scales at ~83s per question.
+    state.timeLimit = exam.timeLimitSec ? exam.timeLimitSec
+      : exam.questions.length * SECONDS_PER_QUESTION;
     state.remaining = state.timeLimit;
 
     enterExam();
@@ -245,7 +248,7 @@
     state.cert = cert;
     state.exam = exam;
     state.questions = r.questions.map((q) => ({
-      id: q.id, domain: q.domain, text: q.text, options: q.options,
+      id: q.id, domain: q.domain, text: q.text, exhibit: q.exhibit, options: q.options,
       answer: q.answer, multi: !!q.multi, explanation: q.explanation
     }));
     state.answers = {};
@@ -321,6 +324,9 @@
     $("#progress-bar").style.width = ((state.current + 1) / total * 100) + "%";
     $("#q-domain").textContent = domainLabel(state.cert, q.domain);
     $("#q-text").textContent = q.text;
+    var exEl = $("#q-exhibit");
+    if (q.exhibit) { exEl.textContent = q.exhibit; exEl.hidden = false; }
+    else { exEl.textContent = ""; exEl.hidden = true; }
     $("#q-hint").textContent = q.multi
       ? "Select all that apply (" + q.answer.length + " correct)."
       : "Select one answer.";
@@ -451,7 +457,8 @@
       let html =
         '<div class="review-tag">Q' + (i + 1) + " · " + escapeHtml(domainLabel(state.cert, q.domain)) +
         " · " + (ok ? "Correct" : "Incorrect") + '</div>' +
-        '<div class="review-q">' + escapeHtml(q.text) + '</div>';
+        '<div class="review-q">' + escapeHtml(q.text) + '</div>' +
+        (q.exhibit ? '<pre class="exhibit-block">' + escapeHtml(q.exhibit) + '</pre>' : '');
       q.options.forEach((text, oi) => {
         const isAns = q.answer.includes(oi);
         const isChosen = chosen.has(oi);

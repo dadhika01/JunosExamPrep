@@ -172,6 +172,12 @@ h3 { font-size: 1rem; margin: 0 0 12px; }
 .flag-btn { background: transparent; border: 1px solid var(--line); border-radius: 8px; padding: 5px 12px; cursor: pointer; color: var(--muted); font-weight: 600; }
 .flag-btn.active { background: var(--flag); color: #201206; border-color: var(--flag); }
 .q-text { font-size: 1.12rem; font-weight: 600; margin: 4px 0 4px; }
+.exhibit-block {
+  background: var(--bg-2); border: 1px solid var(--line); border-left: 3px solid var(--brand);
+  border-radius: 8px; padding: 12px 14px; margin: 10px 0 4px; overflow-x: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.82rem; line-height: 1.45; color: #cfe9e3; white-space: pre;
+}
 .q-hint { color: var(--muted); font-size: 0.85rem; margin: 0 0 14px; font-style: italic; }
 
 .options { display: flex; flex-direction: column; gap: 10px; }
