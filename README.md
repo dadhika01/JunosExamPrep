@@ -41,9 +41,17 @@ Branch **`main`**, folder **`/ (root)`** → **Save**. The site goes live in a m
 
 ## Mock exams
 
-### JNCIS-ENT (JN0-352) — 8 exams, 160 questions
+### JNCIS-ENT (JN0-352) — 11 exams, 340 questions
 *Real exam: 65 questions / 90 min · Junos OS 23.1 · Prerequisite: JNCIA-Junos*
 
+**Full-length, exam-realistic mocks (60 Q / 90-minute clock):**
+| Exam | Style | Questions |
+|------|-------|-----------|
+| ★ Full Mock — Voucher Style | Exhibits, choose-two, defaults; weighted to weak areas | 60 |
+| ★ Full Mock 2 — Hard | Tougher, exhibit-heavy, multi-step, edge-case distractors | 60 |
+| ★ Full Mock 3 — Hard | Tougher, exhibit-heavy, multi-step, edge-case distractors | 60 |
+
+**Topic / practice sets:**
 | Exam | Focus | Questions |
 |------|-------|-----------|
 | Mock Exam A | Full blueprint (all 9 domains) | 25 |
@@ -91,6 +99,7 @@ data.js         # CERTS registry + answer-position balancing
 data-ent.js     # ENT_CERT: metadata, domains, mock exams A–C
 data-ent-2.js   # appends ENT mock exams D–F
 data-ent-3.js   # appends ENT mock exams G–H (objective gap coverage)
+data-ent-exam.js  / -exam2.js / -exam3.js  # three full-length 60 Q / 90 min ENT mocks
 data-sp.js      # SP_CERT:  metadata, domains, mock exams A–C
 data-sp-2.js    # appends SP mock exams D–F
 data-sp-3.js    # appends SP mock exams G–H (objective gap coverage)
