@@ -36,7 +36,24 @@ function balanceAnswerLengths(cert) {
     " for the interface involved",
     " according to the exhibit"
   ];
+  // The two hard mocks are hint-free and use no filler padding; for them we ONLY
+  // trim a trailing clause from an over-long correct option (never pad distractors).
+  var TRIM_ONLY = { "ENT-VOUCHER-2": 1, "ENT-VOUCHER-3": 1 };
   cert.exams.forEach(function (exam) {
+    if (TRIM_ONLY[exam.id]) {
+      exam.questions.forEach(function (q) {
+        if (q.multi || !Array.isArray(q.options) || q.options.length < 2) return;
+        var ci2 = Array.isArray(q.answer) ? q.answer[0] : q.answer;
+        if (typeof ci2 !== "number") return;
+        var lens2 = q.options.map(function (o) { return o.length; });
+        var maxO = Math.max.apply(null, lens2.filter(function (_, i) { return i !== ci2; }));
+        if (lens2[ci2] - maxO < 12) return;
+        var o = q.options[ci2];
+        var c = o.search(/(,\s+(and|which|so|to |until|before|after|while|as )| that )/i);
+        if (c > 24) q.options[ci2] = o.slice(0, c).replace(/[\s,;:]+$/, "");
+      });
+      return;
+    }
     exam.questions.forEach(function (q) {
       if (q.multi || !Array.isArray(q.options) || q.options.length < 2) return;
       var ci = Array.isArray(q.answer) ? q.answer[0] : q.answer;
